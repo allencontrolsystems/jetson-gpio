@@ -31,8 +31,9 @@ JETSON_TX2_NX='JETSON_TX2_NX'
 JETSON_ORIN='JETSON_ORIN'
 JETSON_ORIN_NX='JETSON_ORIN_NX'
 JETSON_ORIN_NANO='JETSON_ORIN_NANO'
+CONNECT_TECH_ROGUE_ORIN='CONNECT_TECH_ROGUE_ORIN'
 
-JETSON_MODELS = [JETSON_TX1, JETSON_TX2, CLARA_AGX_XAVIER, JETSON_TX2_NX, JETSON_XAVIER, JETSON_NANO, JETSON_NX, JETSON_ORIN, JETSON_ORIN_NX, JETSON_ORIN_NANO]
+JETSON_MODELS = [JETSON_TX1, JETSON_TX2, CLARA_AGX_XAVIER, JETSON_TX2_NX, JETSON_XAVIER, JETSON_NANO, JETSON_NX, JETSON_ORIN, JETSON_ORIN_NX, JETSON_ORIN_NANO, CONNECT_TECH_ROGUE_ORIN]
 
 # These arrays contain tuples of all the relevant GPIO data for each Jetson
 # Platform. The fields are:
@@ -90,6 +91,13 @@ compats_jetson_orins_nano = (
     "nvidia,p3509-0000+p3767-0005",
     "nvidia,p3768-0000+p3767-0005",
 )
+
+CONNECT_TECH_ROGUE_ORIN_PIN_DEFS = [
+    (13, 'PH.00', "tegra234-gpio", 13, 13, 'GPIO0', 'GPIO0', '32c0000.pwm', 0),
+    (15, 'PA.02', "tegra234-gpio", 15, 15, 'GPIO1', 'GPIO1', None, None),
+    (17, 'PA.01', "tegra234-gpio", 17, 17, 'GPIO2', 'GPIO2', None, None),
+    (19, 'PBB.01', "tegra234-gpio-aon", 19, 19, 'GPIO3', 'GPIO3', None, None),
+]
 
 JETSON_ORIN_PIN_DEFS = [
     (106, 'PQ.06', "tegra234-gpio", 7, 4, 'MCLK05', 'GP66', None, None),
@@ -387,6 +395,17 @@ jetson_gpio_data = {
             'PROCESSOR': 'A78AE'
         }
     ),
+    CONNECT_TECH_ROGUE_ORIN: (
+        CONNECT_TECH_ROGUE_ORIN_PIN_DEFS,
+        {
+            'P1_REVISION': 1,
+            'RAM': '32768M, 65536M',
+            'REVISION': 'Unknown',
+            'TYPE': 'CONNECT_TECH_ROGUE_ORIN',
+            'MANUFACTURER': 'NVIDIA + CONNECT TECH',
+            'PROCESSOR': 'A78AE'
+        }
+    ),
     CLARA_AGX_XAVIER: (
         CLARA_AGX_XAVIER_PIN_DEFS,
         {
@@ -580,6 +599,8 @@ def get_model():
             warn_if_not_carrier_board('3509', '3449')
             return JETSON_NX
         elif matches(compats_jetson_orins):
+            if os.path.exists("/usr/bin/cti-orin-agx-avt-fdt.sh"):
+                return CONNECT_TECH_ROGUE_ORIN
             warn_if_not_carrier_board('3737')
             return JETSON_ORIN
         elif matches(compats_jetson_orins_nx):
